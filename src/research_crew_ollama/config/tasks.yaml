@@ -1,0 +1,71 @@
+# src/research_crew/config/tasks.yaml
+research_task:
+  description: >
+    Conduct thorough research on {topic}. Focus on:
+    1. Key concepts and definitions
+    2. Historical development and recent trends
+    3. Major challenges and opportunities
+    4. Notable applications or case studies
+    5. Future outlook and potential developments
+
+    Make sure to organize your findings in a structured format with clear sections.
+  expected_output: >
+    A comprehensive research document in markdown with well-organized 
+    sections covering all the requested aspects of {topic}. Include 
+    specific facts, figures, and examples where relevant.
+  agent: researcher
+
+reporting_task:
+  description: >
+    Analyze the research findings and create a comprehensive report 
+    in markdown on {topic}.
+    Your report should:
+    1. Begin with an executive summary
+    2. Include all key information from the research
+    3. Provide insightful analysis of trends and patterns
+    4. Offer recommendations or future considerations
+    5. Be formatted in a professional, easy-to-read style with clear headings
+  expected_output: >
+    A polished, professional analysis that presents the research
+    findings with added analysis and insights. The report should be 
+    well-structured with the following sections: 
+    1. Executive Summary (3-5 bullet points summarizing key findings)
+    2. Introduction (background and purpose of the report)
+    3. Main sections
+    4. Conclusion
+  agent: reporting_analyst
+  context:
+    - research_task
+  output_file: output/report.md
+
+fact_checking_task:
+  description: >
+    Verify the accuracy and reliability of the research findings and report 
+    content. Your tasks include:
+    1. Cross-checking facts and data against credible sources
+    2. Identifying any discrepancies or unsupported claims
+    3. Providing corrections or suggestions for improvement
+  expected_output: >
+    A detailed fact-checking report in markdown on the {topic} that highlights any inaccuracies found in the
+    research and reporting tasks. Include a list of verified sources and any
+    necessary corrections to the report content.
+  agent: fact_checker
+  context:
+    - research_task
+    - reporting_task
+  output_file: output/fact_check_report.md
+
+review_task:
+  description: >
+    Review the final report and fact-checking document for overall coherence,
+    clarity, and accuracy. Provide feedback on the structure, content, and
+    presentation of the documents.
+  expected_output: >
+    A review document in markdown that summarizes your feedback on the research report
+    and fact-checking report. Include suggestions for improvement and any
+    final recommendations for the research team.
+  agent: reviewer  # or another agent if needed for review
+  context:
+    - reporting_task
+    - fact_checking_task
+  output_file: output/review_report.md

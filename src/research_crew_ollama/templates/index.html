@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Research Crew Ollama</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Research Crew Ollama</h1>
+        <form id="researchForm">
+            <div class="form-group">
+                <label for="topic">Research Topic:</label>
+                <input type="text" id="topic" name="topic" value="AI Agents in 2024-2025" required>
+            </div>
+            <button type="submit">Start Research</button>
+        </form>
+        <div id="loading" style="display: none;">
+            <p>Research in progress... This may take several minutes.</p>
+        </div>
+        <div id="result">
+            <pre id="report"></pre>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('researchForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const loading = document.getElementById('loading');
+            const report = document.getElementById('report');
+            loading.style.display = 'block';
+            report.textContent = '';
+
+            const formData = new FormData(e.target);
+            try {
+                const response = await fetch('/run_research', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                report.textContent = data.report;
+            } catch (error) {
+                report.textContent = 'Error: ' + error.message;
+            } finally {
+                loading.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
