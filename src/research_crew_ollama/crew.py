@@ -1,6 +1,7 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 from crewai_tools import SerperDevTool
+from datetime import datetime
 
 # If you want to run a snippet of code before or after the crew starts,
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -55,27 +56,43 @@ class ResearchCrewOllama():
     def research_task(self) -> Task:
         return Task(
             config=self.tasks_config['research_task'],
+            callback_manager={
+                'on_start': lambda task: print(f"Started: {task.description[:100]}..."),
+                'on_end': lambda task: print(f"Completed: {task.description[:100]}...")
+            }
         )
 
     @task
     def reporting_task(self) -> Task:
         return Task(
             config=self.tasks_config['reporting_task'],
-            output_file='output/report.md'
+            output_file='output/report.md',
+            callback_manager={
+                'on_start': lambda task: print(f"Started: {task.description[:100]}..."),
+                'on_end': lambda task: print(f"Completed: {task.description[:100]}...")
+            }
         )
     
     @task
     def fact_checking_task(self) -> Task:
         return Task(
             config=self.tasks_config['fact_checking_task'],
-            output_file='output/fact_checking_report.md'
+            output_file='output/fact_checking_report.md',
+            callback_manager={
+                'on_start': lambda task: print(f"Started: {task.description[:100]}..."),
+                'on_end': lambda task: print(f"Completed: {task.description[:100]}...")
+            }
         )
     
     @task
     def review_task(self) -> Task:
         return Task(
             config=self.tasks_config['review_task'],
-            output_file='output/review_report.md'
+            output_file='output/review_report.md',
+            callback_manager={
+                'on_start': lambda task: print(f"Started: {task.description[:100]}..."),
+                'on_end': lambda task: print(f"Completed: {task.description[:100]}...")
+            }
         )
 
     @crew

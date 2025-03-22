@@ -5,6 +5,8 @@ import warnings
 from datetime import datetime
 from flask import Flask, render_template, request, jsonify
 from research_crew_ollama.crew import ResearchCrewOllama
+from flask_socketio import SocketIO, emit
+import threading
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -12,18 +14,24 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 os.makedirs('output', exist_ok=True)
 
 app = Flask(__name__)
+socketio = SocketIO(app, cors_allowed_origins="*")
+current_agent_statuses = {}
+
+def update_agent_status(agent_name, status):
+    """Update agent status and emit to clients"""
+    current_agent_statuses[agent_name] = status
+    socketio.emit('agent_status_update', status)
 
 def run_research(topic):
-    """
-    Run the crew with a specific topic.
-    """
+    """Run the crew with a specific topic."""
     inputs = {
         'topic': topic,
         'current_year': str(datetime.now().year)
     }
     
     try:
-        ResearchCrewOllama().crew().kickoff(inputs=inputs)
+        crew = ResearchCrewOllama().crew()
+        crew.kickoff(inputs=inputs)
         return True
     except Exception as e:
         print(f"An error occurred while running the crew: {e}")
@@ -49,11 +57,16 @@ def start_research():
         
     return jsonify({'status': 'success' if success else 'error', 'report': report})
 
+@socketio.on('connect')
+def handle_connect():
+    """Send current agent statuses to newly connected clients"""
+    emit('initial_statuses', current_agent_statuses)
+
 def run():
     """
-    Run the web application.
+    Run the web application with SocketIO support.
     """
-    app.run(debug=True)
+    socketio.run(app, debug=True)
 
 def train(topic):
     """

@@ -203,6 +203,40 @@ pre {
     100% { opacity: 1; }
 }
 
+.agent-details {
+    margin-top: 12px;
+    font-size: 13px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.agent-detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.agent-detail-label {
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.agent-detail-value {
+    color: var(--md-primary);
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.agent-timestamp {
+    font-size: 11px;
+    color: rgba(0, 0, 0, 0.4);
+    margin-top: 8px;
+    text-align: right;
+}
+
 /* Material Design Variables */
 :root {
   --md-primary: #1976d2;
