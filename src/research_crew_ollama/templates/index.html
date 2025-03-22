@@ -3,6 +3,7 @@
 <head>
     <title>Research Crew Ollama</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -17,18 +18,16 @@
         <div id="loading" style="display: none;">
             <p>Research in progress... This may take several minutes.</p>
         </div>
-        <div id="result">
-            <pre id="report"></pre>
-        </div>
+        <div id="result" class="markdown-content"></div>
     </div>
 
     <script>
         document.getElementById('researchForm').onsubmit = async (e) => {
             e.preventDefault();
             const loading = document.getElementById('loading');
-            const report = document.getElementById('report');
+            const result = document.getElementById('result');
             loading.style.display = 'block';
-            report.textContent = '';
+            result.innerHTML = '';
 
             const formData = new FormData(e.target);
             try {
@@ -37,9 +36,9 @@
                     body: formData
                 });
                 const data = await response.json();
-                report.textContent = data.report;
+                result.innerHTML = marked.parse(data.report);
             } catch (error) {
-                report.textContent = 'Error: ' + error.message;
+                result.innerHTML = marked.parse('**Error:** ' + error.message);
             } finally {
                 loading.style.display = 'none';
             }

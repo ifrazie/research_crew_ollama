@@ -55,7 +55,7 @@ def run():
     """
     app.run(debug=True)
 
-def train():
+def train(topic):
     """
     Train the crew for a given number of iterations.
     """
@@ -68,12 +68,12 @@ def train():
     except Exception as e:
         raise Exception(f"An error occurred while training the crew: {e}")
 
-def test():
+def test(topic):
     """
     Test the crew execution and returns the results.
     """
     inputs = {
-        "topic": "AI LLMs",
+        "topic": topic,
         "current_year": str(datetime.now().year)
     }
     try:
