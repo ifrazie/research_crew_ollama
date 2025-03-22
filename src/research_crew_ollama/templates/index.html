@@ -1,24 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Research Crew Ollama</title>
+    <title>Research Agent</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Research Crew Ollama</h1>
-        <form id="researchForm">
-            <div class="form-group">
-                <label for="topic">Research Topic:</label>
-                <input type="text" id="topic" name="topic" value="AI Agents in 2024-2025" required>
+    <div class="app-layout">
+        <div class="main-content">
+            <h1>Research Agent</h1>
+            <form id="researchForm">
+                <div class="form-group">
+                    <label for="topic">Research Topic:</label>
+                    <input type="text" id="topic" name="topic" placeholder="Please enter your research topic" required>
+                </div>
+                <button type="submit">Start Research</button>
+            </form>
+            <div id="loading" style="display: none;">
+                <p>Research in progress... This may take several minutes.</p>
             </div>
-            <button type="submit">Start Research</button>
-        </form>
-        <div id="loading" style="display: none;">
-            <p>Research in progress... This may take several minutes.</p>
+            <div id="result" class="markdown-content"></div>
         </div>
-        <div id="result" class="markdown-content"></div>
+
+        <div class="agent-visualization">
+            <h2>Agent Crew Status</h2>
+            <div id="agentCards">
+                <div class="agent-card" data-agent="researcher">
+                    <h3>Research Specialist</h3>
+                    <div class="agent-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Idle</span>
+                    </div>
+                </div>
+                <div class="agent-card" data-agent="reporting_analyst">
+                    <h3>Report Analyst</h3>
+                    <div class="agent-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Idle</span>
+                    </div>
+                </div>
+                <div class="agent-card" data-agent="fact_checker">
+                    <h3>Fact Checker</h3>
+                    <div class="agent-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Idle</span>
+                    </div>
+                </div>
+                <div class="agent-card" data-agent="reviewer">
+                    <h3>Document Reviewer</h3>
+                    <div class="agent-status">
+                        <span class="status-indicator"></span>
+                        <span class="status-text">Idle</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -31,6 +67,60 @@
 
             const formData = new FormData(e.target);
             try {
+                const response = await fetch('/run_research', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                result.innerHTML = marked.parse(data.report);
+            } catch (error) {
+                result.innerHTML = marked.parse('**Error:** ' + error.message);
+            } finally {
+                loading.style.display = 'none';
+            }
+        };
+
+        function updateAgentStatus(agentName, isActive) {
+            const agentCard = document.querySelector(`[data-agent="${agentName}"]`);
+            if (agentCard) {
+                const indicator = agentCard.querySelector('.status-indicator');
+                const statusText = agentCard.querySelector('.status-text');
+                
+                if (isActive) {
+                    agentCard.classList.add('active');
+                    indicator.classList.add('active');
+                    statusText.textContent = 'Working';
+                } else {
+                    agentCard.classList.remove('active');
+                    indicator.classList.remove('active');
+                    statusText.textContent = 'Idle';
+                }
+            }
+        }
+
+        // Simulate agent activity when research starts
+        document.getElementById('researchForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const loading = document.getElementById('loading');
+            const result = document.getElementById('result');
+            loading.style.display = 'block';
+            result.innerHTML = '';
+
+            // Simulate sequential agent activation
+            const agents = ['researcher', 'reporting_analyst', 'fact_checker', 'reviewer'];
+            
+            const formData = new FormData(e.target);
+            try {
+                // Reset all agents
+                agents.forEach(agent => updateAgentStatus(agent, false));
+                
+                // Simulate sequential work
+                for (let agent of agents) {
+                    updateAgentStatus(agent, true);
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate work time
+                    updateAgentStatus(agent, false);
+                }
+
                 const response = await fetch('/run_research', {
                     method: 'POST',
                     body: formData
